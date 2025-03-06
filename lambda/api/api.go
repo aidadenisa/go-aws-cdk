@@ -3,18 +3,23 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"lambda-func/database"
 	"lambda-func/types"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 )
 
-type ApiHandler struct {
-	dbStrore database.UserStore
+type UserStore interface {
+	DoesUserExist(username string) (bool, error)
+	InsertUser(user types.User) error
+	GetUser(username string) (types.User, error)
 }
 
-func NewApiHandler(dbStore database.UserStore) ApiHandler {
+type ApiHandler struct {
+	dbStrore UserStore
+}
+
+func NewApiHandler(dbStore UserStore) ApiHandler {
 	return ApiHandler{
 		dbStrore: dbStore,
 	}
